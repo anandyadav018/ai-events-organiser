@@ -42,7 +42,7 @@ export default function RootLayout({ children }) {
 
           {/* Footer */}
           <footer className="border-t border-gray-800/50 py-8 px-6 max-w-7xl mx-autp">
-            <div className="text-sm text-gray-400">Made by RoadsideCoder</div>
+            <div className="text-sm text-gray-400">Made by Anand Yadav</div>
           </footer>
           <Toaster richColors />
         </main>
