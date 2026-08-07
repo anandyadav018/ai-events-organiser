@@ -3,10 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2, Ticket, CheckCircle } from "lucide-react";
-import { useConvexMutation } from "../../../../../hooks/use-convex-query";
-import { api } from "../../../../../convex/_generated/api";
+import { useMutation } from "../../../../../hooks/use-mutation";
 import { toast } from "sonner";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "../../../../../hooks/use-auth";
 
 import {
   Dialog,
@@ -22,15 +21,16 @@ import { Separator } from "../../../../../components/ui/separator";
 
 export default function RegisterModal({ event, isOpen, onClose }) {
   const router = useRouter();
-  const { user } = useUser();
-  const [name, setName] = useState(user?.fullName || "");
+  const { user } = useAuth();
+  const [name, setName] = useState(user?.name || "");
   const [email, setEmail] = useState(
-    user?.primaryEmailAddress?.emailAddress || ""
+    user?.email || ""
   );
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const { mutate: registerForEvent, isLoading } = useConvexMutation(
-    api.registrations.registerForEvent
+  const { mutate: registerForEvent, isLoading } = useMutation(
+    "/api/registrations",
+    "POST"
   );
 
   const handleSubmit = async (e) => {

@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { Search, MapPin, Calendar, Loader2 } from "lucide-react";
 import { State, City } from "country-state-city";
 import { format } from "date-fns";
-import { useConvexQuery, useConvexMutation } from "../hooks/use-convex-query";
-import { api } from "../convex/_generated/api";
+import { useAuth } from "../hooks/use-auth";
+import { useQuery } from "../hooks/use-query";
+import { useMutation } from "../hooks/use-mutation";
 import { createLocationSlug } from "../lib/location-utils";
 import { getCategoryIcon } from "../lib/data";
 
@@ -27,17 +28,18 @@ export default function SearchLocationBar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSearchResults, setShowSearchResults] = useState(false);
   const searchRef = useRef(null);
-
-  const { data: currentUser, isLoading } = useConvexQuery(
-    api.users.getCurrentUser
+  const { user: currentUser, isLoading, updateUser } = useAuth();
+  
+  const { mutate: updateLocation } = useMutation(
+    "/api/auth/onboarding",
+    "POST"
   );
-  const { mutate: updateLocation } = useConvexMutation(
-    api.users.completeOnboarding
-  );
 
-  const { data: searchResults, isLoading: searchLoading } = useConvexQuery(
-    api.search.searchEvents,
-    searchQuery.trim().length >= 2 ? { query: searchQuery, limit: 5 } : "skip"
+  const { data: searchResults, isLoading: searchLoading } = useQuery(
+    `/api/events/search?query=${searchQuery.trim()}&limit=5`,
+    undefined,
+    [searchQuery],
+    searchQuery.trim().length < 2
   );
 
   const indianStates = useMemo(() => State.getStatesOfCountry("IN"), []);
@@ -47,7 +49,9 @@ export default function SearchLocationBar() {
 
   useEffect(() => {
     if (currentUser?.location) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedState(currentUser.location.state || "");
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setSelectedCity(currentUser.location.city || "");
     }
   }, [currentUser, isLoading]);
@@ -93,6 +97,9 @@ export default function SearchLocationBar() {
         await updateLocation({
           location: { city, state, country: "India" },
           interests: currentUser.interests,
+        });
+        updateUser({
+          location: { city, state, country: "India" }
         });
       }
       const slug = createLocationSlug(city, state);

@@ -1,6 +1,5 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -8,44 +7,43 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./ui/dialog";
-import { Button } from "./ui/button";
-import { PricingTable } from "@clerk/nextjs";
 
 export default function UpgradeModal({ isOpen, onClose, trigger = "limit" }) {
+  const getReasonText = () => {
+    switch (trigger) {
+      case "color":
+        return "Unlock custom theme colors to make your events stand out.";
+      case "limit":
+      default:
+        return "You've reached the limit of free events. Upgrade to create unlimited events.";
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-2xl">
-        <DialogHeader>
-          <div className="flex items-center gap-2 mb-2">
-            <Sparkles className="w-6 h-6 text-purple-500" />
-            <DialogTitle className="text-2xl">Upgrade to Pro</DialogTitle>
+      <DialogContent className="max-w-4xl p-0 overflow-hidden bg-background/95 backdrop-blur-xl">
+        <div className="h-[90vh] overflow-y-auto">
+          <div className="p-6 md:p-10 space-y-4">
+            <DialogHeader className="text-center">
+              <DialogTitle className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-pink-500">
+                Upgrade to Spott Pro
+              </DialogTitle>
+              <DialogDescription className="text-lg">
+                {getReasonText()}
+              </DialogDescription>
+            </DialogHeader>
+            <div className="mt-8 text-center text-xl p-8 border rounded-lg bg-muted/50">
+              Pricing options will be available soon. Please contact support to upgrade.
+            </div>
+            <div className="flex gap-3 mt-4">
+              <button 
+                onClick={onClose} 
+                className="w-full py-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-md transition-colors"
+              >
+                Maybe Later
+              </button>
+            </div>
           </div>
-          <DialogDescription>
-            {trigger === "header" && "Create Unlimited Events with Pro! "}
-            {trigger === "limit" && "You've reached your free event limit. "}
-            {trigger === "color" && "Custom theme colors are a Pro feature. "}
-            Unlock unlimited events and premium features!
-          </DialogDescription>
-        </DialogHeader>
-
-        {/* Pricing Cards */}
-        <PricingTable
-          checkoutProps={{
-            appearance: {
-              elements: {
-                drawerRoot: {
-                  zIndex: 2000,
-                },
-              },
-            },
-          }}
-        />
-
-        {/* Footer */}
-        <div className="flex gap-3">
-          <Button variant="outline" onClick={onClose} className="flex-1">
-            Maybe Later
-          </Button>
         </div>
       </DialogContent>
     </Dialog>

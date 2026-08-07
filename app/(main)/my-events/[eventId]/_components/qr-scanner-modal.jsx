@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { QrCode, Loader2 } from "lucide-react";
-import { useConvexMutation } from "../../../../../hooks/use-convex-query";
-import { api } from "../../../../../convex/_generated/api";
+import { useMutation } from "../../../../../hooks/use-mutation";
 import { toast } from "sonner";
 
 import {
@@ -18,19 +17,19 @@ export default function QRScannerModal({ isOpen, onClose }) {
   const [scannerReady, setScannerReady] = useState(false);
   const [error, setError] = useState(null);
 
-  const { mutate: checkInAttendee } = useConvexMutation(
-    api.registrations.checkInAttendee
+  const { mutate: checkInAttendee } = useMutation(
+    "/api/registrations/check-in",
+    "POST"
   );
 
   const handleCheckIn = async (qrCode) => {
     try {
       const result = await checkInAttendee({ qrCode });
 
-      if (result.success) {
+      if (result) {
         toast.success("✅ Check-in successful!");
         onClose();
-      } else {
-        toast.error(result.message || "Check-in failed");
+        window.location.reload(); // Reload to reflect changes
       }
     } catch (error) {
       toast.error(error.message || "Invalid QR code");

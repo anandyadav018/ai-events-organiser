@@ -8,13 +8,9 @@ import * as z from "zod";
 import { format } from "date-fns";
 import { State, City } from "country-state-city";
 import { CalendarIcon, Loader2, Sparkles } from "lucide-react";
-import {
-  useConvexMutation,
-  useConvexQuery,
-} from "../../../hooks/use-convex-query";
-import { api } from "../../../convex/_generated/api";
+import { useMutation } from "../../../hooks/use-mutation";
 import { toast } from "sonner";
-import { useAuth } from "@clerk/nextjs";
+import { useAuth } from "../../../hooks/use-auth";
 
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
@@ -72,12 +68,12 @@ const CreateEvent = () => {
   const [upgradeReason, setUpgradeReason] = useState("limit"); // "limit" or "color"
 
   // Check if user has Pro plan
-  const { has } = useAuth();
-  const hasPro = has?.({ plan: "pro" });
+  const { user: currentUser } = useAuth();
+  const hasPro = false; // Replace with user plan if implemented
 
-  const { data: currentUser } = useConvexQuery(api.users.getCurrentUser);
-  const { mutate: createEvent, isLoading } = useConvexMutation(
-    api.events.createEvent
+  const { mutate: createEvent, isLoading } = useMutation(
+    "/api/events",
+    "POST"
   );
 
   const {

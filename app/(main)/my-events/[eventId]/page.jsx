@@ -20,8 +20,8 @@ import {
   Search,
   Eye,
 } from "lucide-react";
-import { useConvexQuery, useConvexMutation } from "../../../../hooks/use-convex-query";
-import { api } from "../../../../convex/_generated/api";
+import { useQuery } from "../../../../hooks/use-query";
+import { useMutation } from "../../../../hooks/use-mutation";
 import { toast } from "sonner";
 
 import { Button } from "../../../../components/ui/button";
@@ -44,19 +44,13 @@ export default function EventDashboardPage() {
   const [showQRScanner, setShowQRScanner] = useState(false);
 
   // Fetch event dashboard data
-  const { data: dashboardData, isLoading } = useConvexQuery(
-    api.dashboard.getEventDashboard,
-    { eventId }
-  );
+  const { data: dashboardData, isLoading } = useQuery(`/api/dashboard/${eventId}`);
 
   // Fetch registrations
   const { data: registrations, isLoading: loadingRegistrations } =
-    useConvexQuery(api.registrations.getEventRegistrations, { eventId });
+    useQuery(`/api/registrations/event/${eventId}`);
 
-  // Delete event mutation
-  const { mutate: deleteEvent, isLoading: isDeleting } = useConvexMutation(
-    api.dashboard.deleteEvent
-  );
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
     const confirmed = window.confirm(
@@ -66,11 +60,17 @@ export default function EventDashboardPage() {
     if (!confirmed) return;
 
     try {
-      await deleteEvent({ eventId });
+      setIsDeleting(true);
+      const res = await fetch(`/api/events/${dashboardData.event.slug}`, {
+        method: "DELETE",
+      });
+      if(!res.ok) throw new Error("Failed to delete event");
       toast.success("Event deleted successfully");
       router.push("/my-events");
     } catch (error) {
       toast.error(error.message || "Failed to delete event");
+    } finally {
+      setIsDeleting(false);
     }
   };
 

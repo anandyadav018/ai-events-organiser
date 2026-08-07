@@ -7,9 +7,8 @@ import { format } from "date-fns";
 import Image from "next/image";
 import Autoplay from "embla-carousel-autoplay";
 
-// hooks & convex
-import { useConvexQuery } from "../../../hooks/use-convex-query";
-import { api } from "../../../convex/_generated/api";
+import { useQuery } from "../../../hooks/use-query";
+import { useAuth } from "../../../hooks/use-auth";
 
 // utils & data
 import { createLocationSlug } from '../../../lib/location-utils'; 
@@ -35,30 +34,23 @@ export default function ExplorePage() {
   const plugin = useRef(Autoplay({ delay: 2000, stopOnInteraction: true }));
 
   // Fetch current user for location
-  const { data: currentUser } = useConvexQuery(api.users.getCurrentUser);
+  const { user: currentUser } = useAuth();
 
   // Fetch events
-  const { data: featuredEvents, isLoading: loadingFeatured } = useConvexQuery(
-    api.explore.getFeaturedEvents,
-    { limit: 3 }
+  const { data: featuredEvents, isLoading: loadingFeatured } = useQuery(
+    "/api/events/explore?type=featured&limit=3"
   );
 
-  const { data: localEvents, isLoading: loadingLocal } = useConvexQuery(
-    api.explore.getEventsByLocation,
-    {
-      city: currentUser?.location?.city || "Gurugram",
-      state: currentUser?.location?.state || "Haryana",
-      limit: 4,
-    }
+  const { data: localEvents, isLoading: loadingLocal } = useQuery(
+    `/api/events/explore?type=location&city=${currentUser?.location?.city || "Gurugram"}&state=${currentUser?.location?.state || "Haryana"}&limit=4`
   );
 
-  const { data: popularEvents, isLoading: loadingPopular } = useConvexQuery(
-    api.explore.getPopularEvents,
-    { limit: 6 }
+  const { data: popularEvents, isLoading: loadingPopular } = useQuery(
+    "/api/events/explore?type=popular&limit=6"
   );
 
-  const { data: categoryCounts } = useConvexQuery(
-    api.explore.getCategoryCounts
+  const { data: categoryCounts } = useQuery(
+    "/api/events/explore?type=counts"
   );
 
   const handleEventClick = (slug) => {

@@ -3,8 +3,7 @@
 import { useParams, useRouter } from "next/navigation";
 import { notFound } from "next/navigation";
 import { Loader2, MapPin } from "lucide-react";
-import { useConvexQuery } from "../../../../hooks/use-convex-query";
-import { api } from "../../../../convex/_generated/api";
+import { useQuery } from "../../../../hooks/use-query";
 import { CATEGORIES } from "../../../../lib/data";
 import { parseLocationSlug } from "../../../../lib/location-utils";
 import { Badge } from "../../../../components/ui/badge";
@@ -30,16 +29,18 @@ const DynamicExplorePage = () => {
   }
 
   // Fetch events based on type
-  const { data: events, isLoading } = useConvexQuery(
-    isCategory
-      ? api.explore.getEventsByCategory
-      : api.explore.getEventsByLocation,
-    isCategory
-      ? { category: slug, limit: 50 }
-      : city && state
-        ? { city, state, limit: 50 }
-        : "skip"
-    );
+  const queryUrl = isCategory 
+    ? `/api/events/explore?type=category&category=${slug}&limit=50`
+    : (city && state)
+      ? `/api/events/explore?type=location&city=${city}&state=${state}&limit=50`
+      : "";
+      
+  const { data: events, isLoading } = useQuery(
+    queryUrl,
+    undefined,
+    [queryUrl],
+    !queryUrl
+  );
 
     const handleEventClick = (eventSlug) => {
     router.push(`/events/${eventSlug}`);

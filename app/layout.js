@@ -1,9 +1,7 @@
 import "./globals.css";
 import Header from "../components/header";
 import { ThemeProvider } from "../components/theme-provider";
-import { ConvexClientProvider } from "./ConvexClientProvider";
-import { ClerkProvider } from "@clerk/nextjs";
-import { dark } from "@clerk/themes";
+import { AuthProvider } from "../hooks/use-auth";
 import { Toaster } from "sonner";
 
 export const metadata = {
@@ -23,14 +21,9 @@ export default function RootLayout({ children }) {
           enableSystem
           disableTransitionOnChange
         >
-          <ClerkProvider
-            appearance={{
-              theme: dark,
-            }}
-          >
-            <ConvexClientProvider>
-              {/* Header */}
-              <Header />
+          <AuthProvider>
+            {/* Header */}
+            <Header />
 
               <main className="relative min-h-screen container mx-auto pt-40 md:pt-32">
                 {/* glow */}
@@ -49,8 +42,7 @@ export default function RootLayout({ children }) {
                 </footer>
                 <Toaster richColors />
               </main>
-            </ConvexClientProvider>
-          </ClerkProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

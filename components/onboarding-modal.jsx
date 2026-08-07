@@ -2,8 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { MapPin, Heart, ArrowRight, ArrowLeft } from "lucide-react";
-import { useConvexMutation } from "../hooks/use-convex-query";
-import { api } from "../convex/_generated/api";
+import { useMutation } from "../hooks/use-mutation";
 import { toast } from "sonner";
 import { State, City } from "country-state-city";
 import {
@@ -35,8 +34,9 @@ export default function OnboardingModal({ isOpen, onClose, onComplete }) {
     country: "India",
   });
 
-  const { mutate: completeOnboarding, isLoading } = useConvexMutation(
-    api.users.completeOnboarding
+  const { mutate: completeOnboarding, isLoading } = useMutation(
+    "/api/auth/onboarding",
+    "POST"
   );
 
   // Get Indian states

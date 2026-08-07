@@ -1,24 +1,26 @@
 import { Button } from "../../../../../components/ui/button";
 import { Card, CardContent } from "../../../../../components/ui/card";
-import { api } from "../../../../../convex/_generated/api";
-import { useConvexMutation } from "../../../../../hooks/use-convex-query";
+import { useMutation } from "../../../../../hooks/use-mutation";
 import { format } from "date-fns";
 import { CheckCircle, Circle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 // Attendee Card Component
 export function AttendeeCard({ registration }) {
-  const { mutate: checkInAttendee, isLoading } = useConvexMutation(
-    api.registrations.checkInAttendee
+  const { mutate: checkInAttendee, isLoading } = useMutation(
+    "/api/registrations/check-in",
+    "POST"
   );
 
   const handleManualCheckIn = async () => {
     try {
       const result = await checkInAttendee({ qrCode: registration.qrCode });
-      if (result.success) {
+      if (result) {
         toast.success("Attendee checked in successfully");
-      } else {
-        toast.error(result.message);
+        // We'd typically want to refetch the data here, but for simplicity
+        // in a non-Convex world we might rely on the parent component reloading 
+        // or passing a refetch function. For this migration, we'll let it be.
+        window.location.reload(); // Simple solution to reflect changes
       }
     } catch (error) {
       toast.error(error.message || "Failed to check in attendee");

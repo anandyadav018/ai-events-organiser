@@ -6,23 +6,29 @@ import { Button } from "./ui/button";
 import OnboardingModal from "./onboarding-modal";
 import React, { useState } from "react";
 import SearchLocationBar from "./search-location-bar";
-import { SignInButton, useAuth, UserButton, useUser } from "@clerk/nextjs";
+import { useAuth } from "../hooks/use-auth";
 import UpgradeModal from "./upgrade-modal";
-import { Authenticated, Unauthenticated } from "convex/react";
 import { useOnboarding } from "../hooks/use-onboarding";
 import { BarLoader } from "react-spinners";
-import { useStoreUser } from "../hooks/use-store-user";
-import { Building, Crown, Plus, Sparkles, Ticket } from "lucide-react";
+import { Building, Crown, Plus, Ticket, LogOut } from "lucide-react";
 import { Badge } from "./ui/badge";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "./ui/popover";
 
 const Header = () => {
-  const { isLoading } = useStoreUser();
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const { showOnboarding, handleOnboardingComplete, handleOnboardingSkip } =
     useOnboarding();
-  const { has } = useAuth();
-  const hasPro = has?.({ plan: "pro" });
+    
+  const { user, isAuthenticated, isLoading, logout } = useAuth();
+  
+  // Custom auth won't have hasPro natively in the same way, using a mock for now
+  // or you could add a 'plan' field to the user model
+  const hasPro = false; // Replace with user?.plan === "pro" if implemented
 
   return (
     <>
@@ -66,39 +72,45 @@ const Header = () => {
             )}
 
             <Button variant={"ghost"} size="sm" asChild className={"mr-2"}>
-              <Link href="explore">Explore</Link>
+              <Link href="/explore">Explore</Link>
             </Button>
-            <Authenticated>
-              <Button size="sm" asChild className="flex gap-2 mr-2">
-                <Link href="/create-event">
-                  <Plus className="w-4 h-4" />
-                  <span className="hidden sm:inline">Create Event</span>
-                </Link>
+            
+            {isAuthenticated ? (
+              <>
+                <Button size="sm" asChild className="flex gap-2 mr-2">
+                  <Link href="/create-event">
+                    <Plus className="w-4 h-4" />
+                    <span className="hidden sm:inline">Create Event</span>
+                  </Link>
+                </Button>
+
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button variant="outline" size="sm" className="rounded-full w-8 h-8 p-0">
+                      {user?.name?.charAt(0)?.toUpperCase() || "U"}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent align="end" className="w-48 p-2 flex flex-col gap-1">
+                      <Link href="/my-tickets" className="flex items-center hover:bg-muted p-2 rounded-md cursor-pointer text-sm">
+                        <Ticket className="mr-2 h-4 w-4" />
+                        <span>My Tickets</span>
+                      </Link>
+                      <Link href="/my-events" className="flex items-center hover:bg-muted p-2 rounded-md cursor-pointer text-sm">
+                        <Building className="mr-2 h-4 w-4" />
+                        <span>My Events</span>
+                      </Link>
+                    <button onClick={logout} className="flex items-center text-red-500 hover:bg-red-500/10 p-2 rounded-md cursor-pointer text-sm w-full text-left">
+                      <LogOut className="mr-2 h-4 w-4" />
+                      <span>Log out</span>
+                    </button>
+                  </PopoverContent>
+                </Popover>
+              </>
+            ) : (
+              <Button size="sm" asChild>
+                <Link href="/sign-in">Sign In</Link>
               </Button>
-
-              <UserButton>
-                <UserButton.MenuItems>
-                  <UserButton.Link
-                    label="My Tickets"
-                    labelIcon={<Ticket size={16} />}
-                    href="/my-tickets"
-                  />
-                  <UserButton.Link
-                    label="My Events"
-                    labelIcon={<Building size={16} />}
-                    href="/my-events"
-                  />
-
-                  <UserButton.Action label="manageAccount" />
-                </UserButton.MenuItems>
-              </UserButton>
-            </Authenticated>
-
-            <Unauthenticated>
-              <SignInButton mode="modal">
-                <Button size="sm">Sign In</Button>
-              </SignInButton>
-            </Unauthenticated>
+            )}
           </div>
         </div>
 

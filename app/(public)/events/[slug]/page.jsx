@@ -17,10 +17,9 @@ import {
   Loader2,
   CheckCircle,
 } from "lucide-react";
-import { useConvexQuery } from "../../../../hooks/use-convex-query";
-import { api } from "../../../../convex/_generated/api";
+import { useQuery } from "../../../../hooks/use-query";
 import { toast } from "sonner";
-import { useUser } from "@clerk/nextjs";
+import { useAuth } from "../../../../hooks/use-auth";
 
 import { Button } from "../../../../components/ui/button";
 import { Badge } from "../../../../components/ui/badge";
@@ -43,18 +42,18 @@ function darkenColor(color, amount) {
 export default function EventDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { user } = useUser();
+  const { user } = useAuth();
   const [showRegisterModal, setShowRegisterModal] = useState(false);
 
   // Fetch event details
-  const { data: event, isLoading } = useConvexQuery(api.events.getEventBySlug, {
-    slug: params.slug,
-  });
+  const { data: event, isLoading } = useQuery(`/api/events/${params.slug}`);
 
   // Check if user is already registered
-  const { data: registration } = useConvexQuery(
-    api.registrations.checkRegistration,
-    event?._id ? { eventId: event._id } : "skip"
+  const { data: registration } = useQuery(
+    event?._id ? `/api/registrations/check?eventId=${event._id}` : "",
+    undefined,
+    [event?._id],
+    !event?._id
   );
 
   const handleShare = async () => {
@@ -98,7 +97,7 @@ export default function EventDetailPage() {
 
   const isEventFull = event.registrationCount >= event.capacity;
   const isEventPast = event.endDate < Date.now();
-  const isOrganizer = user?.id === event.organizerId;
+  const isOrganizer = user?._id === event.organizerId;
 
   return (
     <div

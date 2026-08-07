@@ -5,8 +5,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { Calendar, MapPin, Loader2, Ticket } from "lucide-react";
-import { useConvexQuery, useConvexMutation } from "../../../hooks/use-convex-query";
-import { api } from "../../../convex/_generated/api";
+import { useQuery } from "../../../hooks/use-query";
+import { useMutation } from "../../../hooks/use-mutation";
 import { toast } from "sonner";
 import QRCode from "react-qr-code";
 
@@ -25,20 +25,21 @@ export default function MyTicketsPage() {
   const router = useRouter();
   const [selectedTicket, setSelectedTicket] = useState(null);
 
-  const { data: registrations, isLoading } = useConvexQuery(
-    api.registrations.getMyRegistrations
+  const { data: registrations, isLoading, refetch } = useQuery(
+    "/api/registrations"
   );
 
   const { mutate: cancelRegistration, isLoading: isCancelling } =
-    useConvexMutation(api.registrations.cancelRegistration);
+    useMutation("/api/registrations", "DELETE");
 
   const handleCancelRegistration = async (registrationId) => {
     if (!window.confirm("Are you sure you want to cancel this registration?"))
       return;
 
     try {
-      await cancelRegistration({ registrationId });
+      await fetch(`/api/registrations/${registrationId}`, { method: 'DELETE' });
       toast.success("Registration cancelled successfully.");
+      refetch();
     } catch (error) {
       toast.error(error.message || "Failed to cancel registration");
     }
