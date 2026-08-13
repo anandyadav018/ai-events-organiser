@@ -38,7 +38,18 @@ export function useMutation<TData = any, TVariables = any>(
       }
 
       const response = await fetch(url, options);
-      const json = await response.json();
+      const contentType = response.headers.get("content-type");
+      let json: any = {};
+
+      if (contentType && contentType.includes("application/json")) {
+        json = await response.json();
+      } else {
+        const text = await response.text();
+        if (!response.ok) {
+          throw new Error(`Server error (${response.status}): ${response.statusText}`);
+        }
+        json = { data: text };
+      }
 
       if (!response.ok || (json.hasOwnProperty("success") && !json.success)) {
         throw new Error(json.error || "An error occurred during mutation");

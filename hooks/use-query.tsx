@@ -27,8 +27,17 @@ export function useQuery<T>(
       setError(null);
       
       const response = await fetch(url, options);
-      const json = await response.json();
-      
+      const contentType = response.headers.get("content-type");
+      let json: any = {};
+
+      if (contentType && contentType.includes("application/json")) {
+        json = await response.json();
+      } else {
+        if (!response.ok) {
+          throw new Error(`Server error (${response.status})`);
+        }
+      }
+
       if (!response.ok || !json.success) {
         throw new Error(json.error || "An error occurred");
       }
