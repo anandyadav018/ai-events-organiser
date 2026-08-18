@@ -1,9 +1,9 @@
 import { NextRequest } from "next/server";
-import { authenticateRequest, isAuthResponse } from "../../../../lib/auth-guard";
-import { successResponse, validationErrorResponse, errorResponse } from "../../../../lib/api-response";
-import { onboardingSchema } from "../../../../lib/validations";
-import connectToDatabase from "../../../../lib/mongodb";
-import User from "../../../../models/User";
+import { authenticateRequest, isAuthResponse } from "@/lib/auth-guard";
+import { successResponse, validationErrorResponse, errorResponse } from "@/lib/api-response";
+import { onboardingSchema } from "@/lib/validations";
+import connectToDatabase from "@/lib/mongodb";
+import User from "@/models/User";
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
     const validation = onboardingSchema.safeParse(body);
     
     if (!validation.success) {
-      return validationErrorResponse(validation.error.errors[0].message);
+      return validationErrorResponse(validation.error.issues[0].message);
     }
     
     await connectToDatabase();

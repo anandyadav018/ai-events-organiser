@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { successResponse } from "../../../../lib/api-response";
+import { successResponse } from "@/lib/api-response";
 import { cookies } from "next/headers";
 
 export async function POST(req: NextRequest) {

@@ -1,10 +1,10 @@
 import { NextRequest } from "next/server";
 import bcrypt from "bcryptjs";
-import { successResponse, validationErrorResponse, errorResponse } from "../../../../lib/api-response";
-import { loginSchema } from "../../../../lib/validations";
-import connectToDatabase from "../../../../lib/mongodb";
-import User from "../../../../models/User";
-import { signToken } from "../../../../lib/jwt";
+import { successResponse, validationErrorResponse, errorResponse } from "@/lib/api-response";
+import { loginSchema } from "@/lib/validations";
+import connectToDatabase from "@/lib/mongodb";
+import User from "@/models/User";
+import { signToken } from "@/lib/jwt";
 import { cookies } from "next/headers";
 
 export async function POST(req: NextRequest) {
@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     
     const validation = loginSchema.safeParse(body);
     if (!validation.success) {
-      return validationErrorResponse(validation.error.errors[0].message);
+      return validationErrorResponse(validation.error.issues[0].message);
     }
     
     const { email, password } = validation.data;

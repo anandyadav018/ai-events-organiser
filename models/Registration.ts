@@ -35,7 +35,7 @@ const registrationSchema = new Schema<IRegistration>(
 registrationSchema.index({ eventId: 1 });
 registrationSchema.index({ userId: 1 });
 registrationSchema.index({ eventId: 1, userId: 1 }, { unique: true });
-registrationSchema.index({ qrCode: 1 });
+// qrCode index created via unique: true in schema
 
 const Registration: Model<IRegistration> =
   mongoose.models.Registration ||

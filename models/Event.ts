@@ -61,7 +61,7 @@ const eventSchema = new Schema<IEvent>(
 eventSchema.index({ organizerId: 1 });
 eventSchema.index({ category: 1 });
 eventSchema.index({ startDate: 1 });
-eventSchema.index({ slug: 1 });
+// slug index created via unique: true in schema
 eventSchema.index({ city: 1, state: 1 });
 eventSchema.index({ title: "text" });
 

@@ -1,13 +1,13 @@
 import { NextRequest } from "next/server";
-import { authenticateRequest, isAuthResponse } from "../../../../../lib/auth-guard";
-import { successResponse, errorResponse, notFoundResponse, forbiddenResponse } from "../../../../../lib/api-response";
-import connectToDatabase from "../../../../../lib/mongodb";
-import Registration from "../../../../../models/Registration";
-import Event from "../../../../../models/Event";
+import { authenticateRequest, isAuthResponse } from "@/lib/auth-guard";
+import { successResponse, errorResponse, notFoundResponse, forbiddenResponse } from "@/lib/api-response";
+import connectToDatabase from "@/lib/mongodb";
+import Registration from "@/models/Registration";
+import Event from "@/models/Event";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const resolvedParams = await params;

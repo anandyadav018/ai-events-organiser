@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
-import { successResponse, errorResponse } from "../../../../lib/api-response";
-import connectToDatabase from "../../../../lib/mongodb";
-import Event from "../../../../models/Event";
+import { successResponse, errorResponse } from "@/lib/api-response";
+import connectToDatabase from "@/lib/mongodb";
+import Event from "@/models/Event";
 
 export async function GET(req: NextRequest) {
   try {

@@ -1,10 +1,10 @@
 import { NextRequest } from "next/server";
-import { authenticateRequest, isAuthResponse } from "../../../../lib/auth-guard";
-import { successResponse, validationErrorResponse, errorResponse, notFoundResponse } from "../../../../lib/api-response";
-import { registerForEventSchema } from "../../../../lib/validations";
-import connectToDatabase from "../../../../lib/mongodb";
-import Event from "../../../../models/Event";
-import Registration from "../../../../models/Registration";
+import { authenticateRequest, isAuthResponse } from "@/lib/auth-guard";
+import { successResponse, validationErrorResponse, errorResponse, notFoundResponse } from "@/lib/api-response";
+import { registerForEventSchema } from "@/lib/validations";
+import connectToDatabase from "@/lib/mongodb";
+import Event from "@/models/Event";
+import Registration from "@/models/Registration";
 
 function generateQRCode() {
   return `EVT-${Date.now()}-${Math.random().toString(36).substring(2, 11).toUpperCase()}`;
@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
     const validation = registerForEventSchema.safeParse(body);
     
     if (!validation.success) {
-      return validationErrorResponse(validation.error.errors[0].message);
+      return validationErrorResponse(validation.error.issues[0].message);
     }
     
     const { eventId, attendeeName, attendeeEmail } = validation.data;

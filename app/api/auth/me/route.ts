@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
-import { authenticateRequest, isAuthResponse } from "../../../../lib/auth-guard";
-import { successResponse, errorResponse } from "../../../../lib/api-response";
+import { authenticateRequest, isAuthResponse } from "@/lib/auth-guard";
+import { successResponse, errorResponse } from "@/lib/api-response";
 
 export async function GET(req: NextRequest) {
   try {

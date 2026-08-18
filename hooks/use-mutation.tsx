@@ -29,7 +29,7 @@ export function useMutation<TData = any, TVariables = any>(
 
       if (variables) {
         // Handle query params vs body depending on method
-        if (method === "GET" || method === "DELETE") {
+        if (method === "DELETE") {
           // If DELETE, variables might be passed in URL instead of body for our API design
           // In some implementations DELETE can have a body, but typically params go in URL
         } else {

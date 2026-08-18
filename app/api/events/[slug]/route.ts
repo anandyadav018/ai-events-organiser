@@ -1,14 +1,14 @@
 import { NextRequest } from "next/server";
-import { authenticateRequest, isAuthResponse } from "../../../../lib/auth-guard";
-import { successResponse, errorResponse, notFoundResponse, forbiddenResponse } from "../../../../lib/api-response";
-import connectToDatabase from "../../../../lib/mongodb";
-import Event from "../../../../models/Event";
-import Registration from "../../../../models/Registration";
-import User from "../../../../models/User";
+import { authenticateRequest, isAuthResponse } from "@/lib/auth-guard";
+import { successResponse, errorResponse, notFoundResponse, forbiddenResponse } from "@/lib/api-response";
+import connectToDatabase from "@/lib/mongodb";
+import Event from "@/models/Event";
+import Registration from "@/models/Registration";
+import User from "@/models/User";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const resolvedParams = await params;
@@ -28,7 +28,7 @@ export async function GET(
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
     const resolvedParams = await params;
